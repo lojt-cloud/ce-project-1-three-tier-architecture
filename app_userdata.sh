@@ -2,15 +2,25 @@
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 dnf update -y
-dnf install -y nodejs
+dnf install -y nodejs stress
 
 mkdir -p /home/ec2-user/app
 cd /home/ec2-user/app
 
 cat << 'APP' > /home/ec2-user/app/server.js
 const http = require('http');
+const net = require('net');
 
-const DB_HOST = process.env.DB_HOST || '10.0.21.10';
+function checkTcpSocket(host, port, timeout = 500) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(timeout);
+    socket.on('connect', () => { socket.destroy(); resolve(true); });
+    socket.on('error', () => { socket.destroy(); resolve(false); });
+    socket.on('timeout', () => { socket.destroy(); resolve(false); });
+    socket.connect(port, host);
+  });
+}
 
 async function getMetadata(path) {
   try {
@@ -38,6 +48,13 @@ const server = http.createServer(async (req, res) => {
   const instanceId = await getMetadata('instance-id');
   const az = await getMetadata('placement/availability-zone');
 
+  // Dynamically probe Primary DB on TCP 3306
+  const primaryDbOk = await checkTcpSocket('10.0.21.10', 3306);
+
+  const dbStatusBadge = primaryDbOk
+    ? '<span style="background:#22c55e; color:#000; padding:4px 12px; border-radius:12px; font-weight:bold;">CONNECTED (LIVE TCP 3306 OK)</span>'
+    : '<span style="background:#ef4444; color:#fff; padding:4px 12px; border-radius:12px; font-weight:bold;">DISCONNECTED</span>';
+
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.end(`
     <!DOCTYPE html>
@@ -48,7 +65,6 @@ const server = http.createServer(async (req, res) => {
         body { font-family: Arial, sans-serif; padding: 40px; background: #0f172a; color: #f8fafc; }
         .container { max-width: 800px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .tier { margin: 20px 0; padding: 20px; background: #334155; border-radius: 8px; border-left: 5px solid #38bdf8; }
-        .badge { display: inline-block; padding: 4px 12px; background: #22c55e; color: #000; font-weight: bold; border-radius: 12px; font-size: 0.85em; }
         .data { color: #38bdf8; font-weight: bold; font-family: monospace; }
       </style>
     </head>
@@ -66,9 +82,9 @@ const server = http.createServer(async (req, res) => {
           <p>Availability Zone: <span class="data">${az}</span></p>
         </div>
         <div class="tier">
-          <h2>💾 Tier 3: Data Layer</h2>
-          <p>Database Connectivity Status: <span class="badge">Connected</span></p>
-          <p>Database Target IP: <span class="data">${DB_HOST}</span></p>
+          <h2>💾 Tier 3: Data Layer (Private Subnet)</h2>
+          <p>Database Status: ${dbStatusBadge}</p>
+          <p>Primary DB (us-east-1a): <span class="data">10.0.21.10 (${primaryDbOk ? 'ONLINE' : 'OFFLINE'})</span></p>
         </div>
       </div>
     </body>
