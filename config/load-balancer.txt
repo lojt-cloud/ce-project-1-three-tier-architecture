@@ -1,7 +1,8 @@
-Application Load Balancer Details:
-
-- ALB Name: app-alb
-- ALB ARN: $ALB_ARN
-- ALB DNS: $ALB_DNS
-- Target Group ARN: $TG_ARN
-- Security Group: $ALB_SG
+----------------------------------------------------------------
+|                     DescribeLoadBalancers                    |
++---------+----------------------------------------------------+
+|  DNSName|  proj1-alb-336927573.us-east-1.elb.amazonaws.com   |
+|  Name   |  proj1-alb                                         |
+|  Scheme |  internet-facing                                   |
+|  VPC    |  vpc-01bfe876108cc219b                             |
++---------+----------------------------------------------------+
