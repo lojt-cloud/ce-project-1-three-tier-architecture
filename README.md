@@ -206,4 +206,12 @@ Short-term and long-term improvements, including the case for migrating the bast
 
 ## Team
 
-Individual project — [Balint Lojt]
+Individual project — [Balint Lojt] entry point into the VPC for maintenance.
+
+---
+
+## Observability & High Availability
+
+- **Centralized VPC Flow Logs:** Captured in CloudWatch Log Group `/aws/vpc/proj1-flow-logs`.
+- **Target Tracking Scaling Policy:** Application ASG automatically scales instances up or down based on average CPU utilization (`proj1-asg-high-cpu`).
+- **SNS Notifications:** Email alerts dispatched to administrators upon breach of performance thresholds.
