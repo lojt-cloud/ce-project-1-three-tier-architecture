@@ -1,10 +1,10 @@
-# 🌐 Traffic Flow & Network Routing Test Report
+#  Traffic Flow & Network Routing Test Report
 
 **Date Performed:** Thu Jul 23 15:06:04 CEST 2026
 
 ---
 
-## 🗺️ Verified Traffic Paths
+##  Verified Traffic Paths
 
 1. **Ingress Path (Client ➔ App):**
    ```text

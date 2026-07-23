@@ -13,7 +13,7 @@ The system is structured across three distinct functional tiers distributed acro
                                            │
                                            ▼ (Port 80 HTTP)
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ TIER 1: PRESENTATION (Public Subnets: 10.0.1.0/24 [1a], 10.0.2.0/24 [1b])               │
+│ TIER 1: PRESENTATION (Public Subnets: 10.0.1.0/24 [1a], 10.0.2.0/24 [1b])              │
 │                                                                                        │
 │                     Internet-Facing Application Load Balancer                          │
 │                   (proj1-alb-336927573.us-east-1.elb.amazonaws.com)                    │
@@ -22,7 +22,7 @@ The system is structured across three distinct functional tiers distributed acro
                                            │ Forward Traffic (Port 80)
                                            ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ TIER 2: APPLICATION (Private Subnets: 10.0.11.0/24 [1a], 10.0.12.0/24 [1b])             │
+│ TIER 2: APPLICATION (Private Subnets: 10.0.11.0/24 [1a], 10.0.12.0/24 [1b])            │
 │                                                                                        │
 │                 Auto Scaling Group (Desired: 2-3 | Min: 2 | Max: 6)                    │
 │             Node.js Web App Servers (Express.js) + IMDSv2 Enabled                      │
@@ -41,7 +41,7 @@ The system is structured across three distinct functional tiers distributed acro
                            ┌───────────────────────────────┐
                            │  Bastion Host (Public Subnet) │
                            │  10.0.1.x / Public Elastic IP │
-                           │  SSH Access: 143.179.136.227/32│
+                           │ SSH Access: 143.179.136.227/32│
                            └───────────────┬───────────────┘
                                            │ SSH Jump (Port 22)
                                            ▼

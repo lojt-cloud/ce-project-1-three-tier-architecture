@@ -1,11 +1,11 @@
-# 🧪 Phase 1 Security Test Report
+#  Phase 1 Security Test Report
 
 **Date Performed:** Thu Jul 23 2026
 **VPC ID:** `vpc-01bfe876108cc219b`
 
 ---
 
-## 🎯 Security Test Results
+##  Security Test Results
 
 | Test Case | Target | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -15,7 +15,7 @@
 
 ---
 
-## 🔐 Verified Security Group Ingress Configuration
+##  Verified Security Group Ingress Configuration
 
 ### Bastion Host Ingress Rules (`sg-052f149f8658f9922`)
 |         DescribeSecurityGroupRules       |
