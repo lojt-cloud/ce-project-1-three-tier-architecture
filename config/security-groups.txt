@@ -1,16 +1,153 @@
-3-Tier Security Group Isolation Matrix:
-
-1. ALB Security Group (alb-sg)
-   - ID: sg-0f3e8c6b78bb16871
-   - Inbound: Port 80, 443 from 0.0.0.0/0
-   - Outbound: All traffic to app-tier-sg
-
-2. Application Tier Security Group (app-tier-sg)
-   - ID: sg-0f27b2d004568d74e
-   - Inbound: Port 80, 443 from alb-sg ONLY
-   - Outbound: Port 3306, 5432 to data-tier-sg ONLY
-
-3. Data Tier Security Group (data-tier-sg)
-   - ID: $DATA_SG
-   - Inbound: Port 3306, 5432 from app-tier-sg ONLY
-   - Outbound: Internal VPC traffic only
+[
+    {
+        "Name": "proj1-bastion-sg",
+        "GroupId": "sg-052f149f8658f9922",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "143.179.136.227/32"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "proj1-alb-sg",
+        "GroupId": "sg-09753d7d5333db81c",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 80,
+                "ToPort": 80,
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            },
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 443,
+                "ToPort": 443,
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "proj1-app-tier-sg",
+        "GroupId": "sg-0d7c27a50e69b5f9e",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 80,
+                "ToPort": 80,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-09753d7d5333db81c"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            },
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-052f149f8658f9922"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "default",
+        "GroupId": "sg-09cfbd758698cf1a6",
+        "Ingress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-09cfbd758698cf1a6"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "proj1-data-tier-sg",
+        "GroupId": "sg-0fa3145b2e6343ca8",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 5432,
+                "ToPort": 5432,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-0d7c27a50e69b5f9e"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            },
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-052f149f8658f9922"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            },
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 3306,
+                "ToPort": 3306,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "743631836010",
+                        "GroupId": "sg-0d7c27a50e69b5f9e"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    }
+]
