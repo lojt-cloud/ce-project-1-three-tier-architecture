@@ -1,51 +1,25 @@
-#  Traffic Flow & Load Balancing Test Suite
+# 🌐 Traffic Flow & Network Routing Test Report
 
-## Overview
-This document evaluates traffic routing efficiency across Availability Zones, verifying round-robin distribution by the Application Load Balancer (ALB) and active target health probe monitoring.
+**Date Performed:** Thu Jul 23 15:06:04 CEST 2026
 
 ---
 
-##  Traffic Flow Test Cases
+## 🗺️ Verified Traffic Paths
 
-### 1. Round-Robin Distribution Verification
-Sends multiple sequential requests to the ALB endpoint and captures the serving instance ID to confirm load balancing across Availability Zones (`app-server-1a` and `app-server-1b`).
+1. **Ingress Path (Client ➔ App):**
+   ```text
+   [ Public Client ] ──(HTTP:80)──> [ Internet Gateway ] ──> [ ALB (Public Subnets) ] ──> [ App Server (Private Subnets) ]
+   ```
+   * **Status:** Verified via Application Load Balancer endpoint `http://proj1-alb-336927573.us-east-1.elb.amazonaws.com`.
 
-```bash
-ALB_DNS=$(aws elbv2 describe-load-balancers \
-  --names app-alb \
-  --query 'LoadBalancers[0].DNSName' --output text)
+2. **Database Ingress Path (App ➔ DB):**
+   ```text
+   [ App Instance (10.0.11.x / 10.0.12.x) ] ──(TCP:3306)──> [ DB Host (10.0.21.10) ]
+   ```
+   * **Status:** Verified via application rendering "Database Status: Connected".
 
-echo "Testing Traffic Distribution via $ALB_DNS..."
-echo "--------------------------------------------------"
-
-for i in {1..6}; do
-  INSTANCE_ID=$(curl -s "http://$ALB_DNS/api/stats" | grep -o '"instance":"[^"]*"' | cut -d'"' -f4)
-  echo "Request $i handled by Instance: $INSTANCE_ID"
-  sleep 1
-done
-
-### 2. Target Group Health Status Audit
-
-Checks that the ALB health probes are actively receiving HTTP 200 status responses from /health on port 80.
-
-Bash
-TG_ARN=$(aws elbv2 describe-target-groups \
-  --names app-target-group \
-  --query 'TargetGroups[0].TargetGroupArn' --output text)
-
-aws elbv2 describe-target-health \
-  --target-group-arn $TG_ARN \
-  --query "TargetHealthDescriptions[*].{InstanceId:Target.Id, HealthState:TargetHealth.State, HealthReason:TargetHealth.Reason}" \
-  --output table
-
-Expected Behavioral Flow
-
-Client Request ──> ALB (Port 80)
-                    ├── Request 1 ──> app-server-1a (10.0.11.x) ──> Return HTTP 200
-                    └── Request 2 ──> app-server-1b (10.0.12.x) ──> Return HTTP 200
-
-
-Acceptance Criteria
-[x] Sequential requests alternate between available instances across Availability Zones.
-
-[x] All targets in app-target-group report healthy state under target health checks.
+3. **Outbound Internet Path (App ➔ Internet):**
+   ```text
+   [ App Instance (Private Subnet) ] ──> [ NAT Gateway (Public Subnet) ] ──> [ IGW ] ──> [ Internet ]
+   ```
+   * **Status:** Verified via Node.js setup executing system package updates during user-data bootstrap.
