@@ -1,0 +1,16 @@
+3-Tier Security Group Isolation Matrix:
+
+1. ALB Security Group (alb-sg)
+   - ID: sg-0f3e8c6b78bb16871
+   - Inbound: Port 80, 443 from 0.0.0.0/0
+   - Outbound: All traffic to app-tier-sg
+
+2. Application Tier Security Group (app-tier-sg)
+   - ID: sg-0f27b2d004568d74e
+   - Inbound: Port 80, 443 from alb-sg ONLY
+   - Outbound: Port 3306, 5432 to data-tier-sg ONLY
+
+3. Data Tier Security Group (data-tier-sg)
+   - ID: $DATA_SG
+   - Inbound: Port 3306, 5432 from app-tier-sg ONLY
+   - Outbound: Internal VPC traffic only

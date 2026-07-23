@@ -1,0 +1,17 @@
+VPC ID: vpc-04ab384385311bf3a (10.0.0.0/16)
+
+Tier 1 - Presentation (Public Subnets):
+- public-subnet-1a: 10.0.1.0/24  (subnet-0d06046ce2cb9d9e2)
+- public-subnet-1b: 10.0.2.0/24  (subnet-0d6181a3ff5b0c9b4)
+
+Tier 2 - Application (Private Subnets):
+- app-subnet-1a:    10.0.11.0/24 (subnet-09481b3a06361ac9d)
+- app-subnet-1b:    10.0.12.0/24 (subnet-0cf3fc08a4c68a839)
+
+Tier 3 - Data (Private Subnets):
+- data-subnet-1a:   10.0.21.0/24
+- data-subnet-1b:   10.0.22.0/24
+
+Route Tables:
+- Public RT:  rtb-01c67d51107f3f3ae -> IGW
+- Private RT: rtb-02b7594e742116b12 -> NAT Gateway

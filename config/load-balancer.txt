@@ -1,0 +1,7 @@
+Application Load Balancer Details:
+
+- ALB Name: app-alb
+- ALB ARN: $ALB_ARN
+- ALB DNS: $ALB_DNS
+- Target Group ARN: $TG_ARN
+- Security Group: $ALB_SG

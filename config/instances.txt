@@ -1,0 +1,21 @@
+## Tier 2 - Application Instances:
+
+- app-server-1a:
+  - Instance ID: $APP_INST_1
+  - Subnet ID: $APP_SUBNET_1 (app-subnet-1a)
+  - Security Group: $APP_TIER_SG (app-tier-sg)
+
+- app-server-1b:
+  - Instance ID: $APP_INST_2
+  - Subnet ID: $APP_SUBNET_2 (app-subnet-1b)
+  - Security Group: $APP_TIER_SG (app-tier-sg)
+
+
+## Tier 3 - Data Instance:
+
+- db-server-1a:
+  - Instance ID: $DB_INST_1
+  - Subnet ID: $DB_SUBNET_1 (db-subnet-1a)
+  - Security Group: $DB_TIER_SG (db-tier-sg)
+  - Static Private IP: 10.0.21.10
+  
