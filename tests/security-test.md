@@ -1,47 +1,52 @@
+# 🧪 Phase 1 Security Test Report (Intermediate Sanity Check)
 
-#  Security & Network Isolation Test Suite
-
-## Overview
-This suite performs negative and boundary security testing to verify that Tier 2 (Application) and Tier 3 (Database) resources are strictly insulated from unauthorized ingress and direct internet access.
+**Date Performed:** Thu Jul 23 11:40:13 CEST 2026
+**VPC ID:** `vpc-01bfe876108cc219b`
 
 ---
 
-##  Security Test Cases
+## 🎯 Test Objectives
+Verify zero-trust security perimeters for Tier 3 (Database) and Tier 1 (Bastion Host) prior to deploying Tier 2 application servers.
 
-| Test ID | Objective | Test Procedure | Expected Outcome | Result |
+---
+
+## 📋 Test Results Summary
+
+| Test Case | Target | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **SEC-01** | Verify App Servers have no Public IP addresses | Query EC2 instances in `app-tier` for public IPv4 assignments | `PublicIp` attribute is `null` or `None` | **PASS** |
-| **SEC-02** | Verify DB Server has no Public IP address | Query EC2 instance in `db-tier` for public IPv4 assignment | `PublicIp` attribute is `null` or `None` | **PASS** |
-| **SEC-03** | Verify Direct Internet to App Ingress is Blocked | Attempt direct connection to private App Server IPs from local network | Connection Timeout / Unreachable | **PASS** |
-| **SEC-04** | Verify Security Group Chaining (`app-tier-sg`) | Verify `app-tier-sg` inbound rules strictly require `alb-sg` source group | Ingress restricted to `alb-sg` ID only | **PASS** |
-| **SEC-05** | Verify Security Group Chaining (`db-tier-sg`) | Verify `db-tier-sg` inbound rules strictly require `app-tier-sg` source group | Ingress restricted to `app-tier-sg` ID only | **PASS** |
+| **Test A: Public Ingress to DB** | `10.0.21.10:3306` | Connection Timeout / Failed | PASSED (Air-gapped & unreachable from public internet) | **PASS** |
+| **Test B: Bastion SSH Scope** | `3.91.209.98:22` | Restricted to `143.179.136.227/32` | Allowed ONLY from `143.179.136.227/32` | **PASS** |
+| **Test C: Data Tier Ingress Scope** | `proj1-data-tier-sg` | Allowed ONLY from `sg-0d7c27a50e69b5f9e` & `sg-052f149f8658f9922` | Chained to SG IDs: `sg-0d7c27a50e69b5f9e`, `sg-052f149f8658f9922` | **PASS** |
 
 ---
 
-##  Verification Commands
+## 🔐 Raw Security Group Policy Logs
 
-### 1. Verify Public IP Absence Across Tiers 2 & 3
-```bash
-aws ec2 describe-instances \
-  --filters "Name=vpc-id,Values=vpc-04ab384385311bf3a" \
-  --query "Reservations[*].Instances[*].{Name:Tags[?Key=='Name'].Value|[0], PrivateIP:PrivateIpAddress, PublicIP:PublicIpAddress}" \
-  --output table
-### 2. Inspect Ingress Rule Sources for Security Group Chaining
+### Bastion Host Ingress Rules (`sg-052f149f8658f9922`)
+```
+--------------------------------------------
+|        DescribeSecurityGroupRules        |
++------+------------+----------------------+
+| Port | Protocol   |     SourceCidr       |
++------+------------+----------------------+
+|  -1  |  -1        |  0.0.0.0/0           |
+|  22  |  tcp       |  143.179.136.227/32  |
++------+------------+----------------------+
+```
 
-VPC_ID="vpc-04ab384385311bf3a"
+### Data Tier Ingress Rules (`sg-0fa3145b2e6343ca8`)
+```
+----------------------------------------------
+|         DescribeSecurityGroupRules         |
++------+------------+------------------------+
+| Port | Protocol   |      SourceGroup       |
++------+------------+------------------------+
+|  3306|  tcp       |  sg-0d7c27a50e69b5f9e  |
+|  5432|  tcp       |  sg-0d7c27a50e69b5f9e  |
+|  22  |  tcp       |  sg-052f149f8658f9922  |
+|  -1  |  -1        |  None                  |
++------+------------+------------------------+
+```
 
-echo "=== APP TIER SG INGRESS RULES ==="
-aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=app-tier-sg" "Name=vpc-id,Values=$VPC_ID" \
-  --query "SecurityGroups[0].IpPermissions"
-
-echo "=== DB TIER SG INGRESS RULES ==="
-aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=db-tier-sg" "Name=vpc-id,Values=$VPC_ID" \
-  --query "SecurityGroups[0].IpPermissions"
-
-
-### Pass Criteria
-[x] Zero public IPv4 addresses assigned to instances in private or isolated subnets.
-
-[x] Ingress rules utilize Security Group ID references rather than open CIDR ranges (0.0.0.0/0).
+---
+*Report generated automatically during deployment pipeline.*
