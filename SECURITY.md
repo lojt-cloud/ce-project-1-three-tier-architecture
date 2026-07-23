@@ -105,10 +105,10 @@ Requires a session token header (X-aws-ec2-metadata-token) for metadata requests
 ---
 ##  5. Potential Vulnerabilities & Mitigations
 
-| Identified Threat / Vulnerability   | Risk Level | Current Defense / Mitigation                                  |                  Recommended Long-Term Upgrade                                          |
+| Identified Threat / Vulnerability   | Risk Level | Current Defense / Mitigation                                   |                  Recommended Long-Term Upgrade                                          |
 
-| **Port 22 SSH Exposure on Bastion** | Medium    | Inbound traffic locked strictly to single `/32` operator IP.   | Migrate to **AWS Systems Manager (SSM) Session Manager** to eliminate port 22 entirely. |
-| **Unencrypted HTTP (Port 80)**      | Medium    | ALB listens on Port 80 for lab simplicity.                     | Attach an **ACM SSL/TLS Certificate** and enforce HTTPS (Port 443) redirection.         |
-| **Single NAT Gateway Failure**      | Medium    | Highly resilient within `us-east-1a`; non-crit failure.        | Deploy a **Multi-AZ NAT Gateway** setup (1 per AZ) for strict SLAs.                     |
-| **Single Database EC2 Instance**    | High      | Isolated routing prevents unauthorized external network access | Replace single EC2 DB host with **Amazon RDS Multi-AZ** for active/standby replication. |
-| **Application Layer DDoS**          | Low/Med   | ALB buffers incoming connections across instances.             | Attach **AWS WAF (Web Application Firewall)** to ALB to filter SQLi and XSS attempts.   |
+| **Port 22 SSH Exposure on Bastion** | Medium     | Inbound traffic locked strictly to single `/32` operator IP.   | Migrate to **AWS Systems Manager (SSM) Session Manager** to eliminate port 22 entirely. |
+| **Unencrypted HTTP (Port 80)**      | Medium     | ALB listens on Port 80 for lab simplicity.                     | Attach an **ACM SSL/TLS Certificate** and enforce HTTPS (Port 443) redirection.         |
+| **Single NAT Gateway Failure**      | Medium     | Highly resilient within `us-east-1a`; non-crit failure.        | Deploy a **Multi-AZ NAT Gateway** setup (1 per AZ) for strict SLAs.                     |
+| **Single Database EC2 Instance**    | High       | Isolated routing prevents unauthorized external network access | Replace single EC2 DB host with **Amazon RDS Multi-AZ** for active/standby replication. |
+| **Application Layer DDoS**          | Low/Med    | ALB buffers incoming connections across instances.             | Attach **AWS WAF (Web Application Firewall)** to ALB to filter SQLi and XSS attempts.   |

@@ -8,19 +8,19 @@ This document provides a realistic monthly cost breakdown for running this 3-tie
 
 *Estimates based on standard AWS `us-east-1` On-Demand pricing assuming 730 hours/month.*
 
-| Service Component | Configuration Details | Hourly Rate | Estimated Monthly Cost |
-| :--- | :--- | :--- | :--- |
-| **EC2 — App Tier (3 instances)** | `t3.micro` (2 vCPU, 1 GB RAM) x 3 instances | $0.0104 / hr / instance | **$22.78** |
-| **EC2 — Data Tier (1 instance)** | `t3.micro` (2 vCPU, 1 GB RAM) | $0.0104 / hr | **$7.59** |
-| **EC2 — Bastion Host (1 instance)**| `t3.micro` (2 vCPU, 1 GB RAM) | $0.0104 / hr | **$7.59** |
-| **EBS Storage** | 5 x 8 GB `gp3` volumes (40 GB total) | $0.08 / GB-month | **$3.20** |
-| **Application Load Balancer** | 1 ALB (Public subnets across 2 AZs) | $0.0225 / hr + $0.008/LCU-hr | **$18.00** |
-| **NAT Gateway (1 Gateway)** | 1 NAT Gateway (`us-east-1a`) | $0.045 / hr + $0.045 / GB processed | **$32.85** (+ traffic) |
-| **VPC Flow Logs & CloudWatch** | Custom CloudWatch log group + metrics/alarms | ~$0.50 / GB ingested | **$3.00** |
-| **Data Transfer** | Inbound Free; Inter-AZ traffic ($0.01/GB) | Variable | **~$2.00** |
+| Service Component                | Configuration Details                      | Hourly Rate                    | Estimated Monthly Cost |
+
+| **EC2 — App Tier (3 instances)** | `t3.micro` (2 vCPU, 1 GB RAM) x 3 instances| $0.0104 / hr / instance            | **$22.78**         |
+| **EC2 — Data Tier (1 instance)** | `t3.micro` (2 vCPU, 1 GB RAM)              | $0.0104 / hr                       | **$7.59**          |
+| **EC2 — Bastion Host (1 instance)| `t3.micro` (2 vCPU, 1 GB RAM)              | $0.0104 / hr                       | **$7.59**          |
+| **EBS Storage**                  | 5 x 8 GB `gp3` volumes (40 GB total)       | $0.08 / GB-month                   | **$3.20**          |
+| **Application Load Balancer**    | 1 ALB (Public subnets across 2 AZs)        | $0.0225 / hr + $0.008/LCU-hr       | **$18.00**         |
+| **NAT Gateway (1 Gateway)**      | 1 NAT Gateway (`us-east-1a`)               | $0.045 / hr + $0.045 /GB processed | **$32.85(+traffic) |
+| **VPC Flow Logs & CloudWatch**   | Custom CloudWatch log group + metrics/alarms | ~$0.50 / GB ingested             | **$3.00**          |
+| **Data Transfer**                | Inbound Free; Inter-AZ traffic ($0.01/GB)  | Variable                           | **~$2.00**         |
 
 
- **TOTAL ESTIMATED MONTHLY COST** | | | **~$97.01 / month** |
+ **TOTAL ESTIMATED MONTHLY COST**  | **~$97.01 / month** 
 
 ---
 

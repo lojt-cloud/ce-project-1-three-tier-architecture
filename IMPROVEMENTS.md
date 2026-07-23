@@ -58,7 +58,7 @@ Codify the full VPC, Security Groups, ALB, and ASG resources using **Terraform**
 
 To transform this single-region architecture into a resilient enterprise-grade solution across regions (e.g., Primary: `us-east-1`, Secondary: `us-west-2`):
 
-```text
+
                [ Amazon Route 53 (Latency / Failover Routing) ]
                                      │
            ┌─────────────────────────┴─────────────────────────┐
@@ -85,3 +85,4 @@ Recovery Objectives
 Recovery Time Objective (RTO): < 10 minutes (Time to update DNS and scale secondary ASG).
 
 Recovery Point Objective (RPO): < 1 second (Data loss limited to Aurora cross-region replication lag).
+
