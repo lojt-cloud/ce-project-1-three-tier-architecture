@@ -1,0 +1,21 @@
+{
+  "name": "three-tier-app",
+  "version": "1.0.0",
+  "description": "Node.js application for AWS 3-tier cloud architecture demo with database connectivity probing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "aws",
+    "3-tier",
+    "cloud-architecture",
+    "nodejs"
+  ],
+  "author": "Cloud Engineer",
+  "license": "MIT"
+}
