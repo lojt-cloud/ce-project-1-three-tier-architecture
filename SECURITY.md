@@ -53,27 +53,24 @@ Plaintext
 
 ## Complete Security Group Rule Matrix
 
-|  Security Group        |           Group ID     | Direction   | Protocol / Port | Source / Destination |       Purpose      |
-| **`proj1-alb-sg`**     | `sg-09753d7d5333db81c` | **Inbound** | TCP 80 (HTTP)   | `0.0.0.0/0`          | Public Web Traffic |
+|  Security Group         |           Group ID     | Direction   | Protocol / Port      |         Source / Destination             |       Purpose                 |
 
-| | | **Inbound** | TCP 443 (HTTPS) | `0.0.0.0/0` | Public Secure Web Traffic |
-| | | **Outbound**| TCP 80 | `sg-0d7c27a50e69b5f9e` (`app-tier-sg`) | Forward HTTP to App Instances |
+| **`proj1-alb-sg`**      | `sg-09753d7d5333db81c` | **Inbound** | TCP 80 (HTTP)        | `0.0.0.0/0`                              | Public Web Traffic            | 
+|                         |                        | **Inbound** | TCP 443 (HTTPS)      | `0.0.0.0/0`                              | Public Secure Web Traffic     |
+|                         |                        | **Outbound**| TCP 80               | `sg-0d7c27a50e69b5f9e` (`app-tier-sg`)   | Forward HTTP to App Instances |
+ 
+| **`proj1-app-tier-sg`** | `sg-0d7c27a50e69b5f9e` | **Inbound** |    TCP 80            | `sg-09753d7d5333db81c`(`alb-sg`)         | accept only traffic from ALB  |
+|                         |                        | **Inbound** | TCP 22 (SSH)         | `sg-052f149f8658f9922` (`bastion-sg`)    | Admin access ONLY from Bastion|
+|                         |                        | **Outbound**| TCP 3306 (MySQL)     | `sg-0fa3145b2e6343ca8` (`data-tier-sg`)  | Query Database Tier           |
+|                         |                        | **Outbound**| TCP 80 / 443         | `0.0.0.0/0` (via NAT)                    | Package updates / npm dependencies |
 
-| **`proj1-app-tier-sg`**| `sg-0d7c27a50e69b5f9e` | **Inbound** |    TCP 80       | `sg-09753d7d5333db81c`(`alb-sg`)| accept only traffic from ALB |
+| **`proj1-data-tier-sg`**| `sg-0fa3145b2e6343ca8` | **Inbound** | TCP 3306 (MySQL)     | `sg-0d7c27a50e69b5f9e` (`app-tier-sg`)   | DB Queries   ONLY from App Tier|
+|                         |                        | **Inbound** | TCP 5432 (PostgreSQL)| `sg-0d7c27a50e69b5f9e` (`app-tier-sg`)   | Alternative DB Port |
+|                         |                        | **Inbound** | TCP 22 (SSH)         | `sg-052f149f8658f9922` (`bastion-sg`)    | Admin access ONLY from Bastion |
+|                         |                        | **Outbound**| None                 | None                                     | No outbound traffic initiated |
 
-
-| | | **Inbound** | TCP 22 (SSH) | `sg-052f149f8658f9922` (`bastion-sg`) | Admin access ONLY from Bastion |
-| | | **Outbound**| TCP 3306 (MySQL) | `sg-0fa3145b2e6343ca8` (`data-tier-sg`) | Query Database Tier |
-| | | **Outbound**| TCP 80 / 443 | `0.0.0.0/0` (via NAT) | Package updates / npm dependencies |
-
-| **`proj1-data-tier-sg`**| `sg-0fa3145b2e6343ca8` | **Inbound** | TCP 3306 (MySQL) | `sg-0d7c27a50e69b5f9e` (`app-tier-sg`) | DB Queries 
-
-ONLY from App Tier |
-| | | **Inbound** | TCP 5432 (PostgreSQL)| `sg-0d7c27a50e69b5f9e` (`app-tier-sg`) | Alternative DB Port |
-| | | **Inbound** | TCP 22 (SSH) | `sg-052f149f8658f9922` (`bastion-sg`) | Admin access ONLY from Bastion |
-| | | **Outbound**| None | None | No outbound traffic initiated |
-| **`proj1-bastion-sg`**| `sg-052f149f8658f9922` | **Inbound** | TCP 22 (SSH) | `143.179.136.227/32` | SSH locked to trusted operator IP |
-| | | **Outbound**| TCP 22 (SSH) | `sg-0d7c27a50e69b5f9e`, `sg-0fa3145b2e6343ca8` | SSH jump access to App & Data tiers |
+| **`proj1-bastion-sg`**  | `sg-052f149f8658f9922` | **Inbound** | TCP 22 (SSH)         | `143.179.136.227/32`                     | SSH locked to trusted operator IP |
+|                         |                        | **Outbound**| TCP 22 (SSH)         | sg-0d7c27a50e69b5f9e,sg-0fa3145b2e6343ca8| SSH jump access to App & Data tiers |
 
 
 
