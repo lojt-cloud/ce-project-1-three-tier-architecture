@@ -29,13 +29,17 @@ Enable the AWS Systems Manager (SSM) agent on private App and DB instances and a
    Removes the Bastion EC2 instance cost ($7.59/mo).
 
 ### 2. Database Layer Upgrade (Amazon RDS Multi-AZ)
-* **Current State:** 
-Single EC2 instance running a simulated database process.
 
-* **Proposed Enhancement:** 
-Migrate to Amazon RDS for MySQL/PostgreSQL deployed in Multi-AZ configuration across `data-subnet-1a` and `data-subnet-1b`.
+- **Current State:** 
+A real MariaDB instance runs on `proj1-db-1a` (`10.0.21.10`), single-AZ. The application performs a live TCP connectivity check against it on every page load (see `app/server.js`). Installing MariaDB required a temporary, deliberately time-boxed route to the NAT Gateway on the isolated data-tier route table, since `dnf` needs internet access to pull packages. The route was added just long enough to complete the install, then immediately removed to restore full isolation.
 
-* **Benefits:** 
+- **Known limitation:** 
+No standby instance exists in `data-subnet-1b` due to the free-tier account's 16 vCPU service quota. The application tier's ASG alone can consume up to 10 vCPU at max scale on t3.micro, leaving no safe headroom for a second database instance.
+
+- **Proposed Enhancement:** 
+Migrate to Amazon RDS for MySQL/PostgreSQL deployed in Multi-AZ configuration across `data-subnet-1a` and `data-subnet-1b`. RDS draws from a separate service quota than EC2 vCPUs, resolving the current constraint, and provides a stable DNS endpoint that survives failover. Removing the need for the application to reference a hardcoded primary IP.
+
+- **Benefits:** 
 Automatic failover, automated snapshots, storage auto-scaling, and managed security patches.
 
 ### 3. HTTPS / TLS Termination via AWS Certificate Manager (ACM)

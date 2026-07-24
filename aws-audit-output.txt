@@ -1,0 +1,433 @@
+=== AUDIT RUN: Fri Jul 24 21:24:59 CEST 2026 ===
+
+
+########## VPC ##########
+------------------------------------------------------------------------
+|                             DescribeVpcs                             |
++-------------+---------------+-------------+--------------------------+
+|    CIDR     | DnsHostnames  | DnsSupport  |          VpcId           |
++-------------+---------------+-------------+--------------------------+
+|  10.0.0.0/16|  None         |  None       |  vpc-01bfe876108cc219b   |
++-------------+---------------+-------------+--------------------------+
+
+
+########## SUBNETS ##########
+------------------------------------------------------------------------------------------------
+|                                        DescribeSubnets                                       |
++------------+---------------+---------------+-------------------+-----------------------------+
+|     AZ     | AutoPublicIP  |     CIDR      |       Name        |          SubnetId           |
++------------+---------------+---------------+-------------------+-----------------------------+
+|  us-east-1a|  True         |  10.0.1.0/24  |  public-subnet-1a |  subnet-02267839c7a78a287   |
+|  us-east-1b|  True         |  10.0.2.0/24  |  public-subnet-1b |  subnet-02c09f7a40802b159   |
+|  us-east-1a|  False        |  10.0.11.0/24 |  app-subnet-1a    |  subnet-08bf3234f070914c5   |
+|  us-east-1a|  False        |  10.0.21.0/24 |  data-subnet-1a   |  subnet-09555d6f52ddd710a   |
+|  us-east-1b|  False        |  10.0.22.0/24 |  data-subnet-1b   |  subnet-0332b6e3b6749cca8   |
+|  us-east-1b|  False        |  10.0.12.0/24 |  app-subnet-1b    |  subnet-0ae6fdaf3625f7066   |
++------------+---------------+---------------+-------------------+-----------------------------+
+
+
+########## INTERNET GATEWAY ##########
+----------------------------------------
+|       DescribeInternetGateways       |
++------------------------+-------------+
+|          IgwId         |    State    |
++------------------------+-------------+
+|  igw-0d8218a7dc5a13fbe |  available  |
++------------------------+-------------+
+
+
+########## NAT GATEWAYS ##########
+------------------------------------------
+|           DescribeNatGateways          |
++-----------+----------------------------+
+|  ID       |  nat-05d4531bfaea569ba     |
+|  PublicIP |  54.158.147.82             |
+|  State    |  available                 |
+|  Subnet   |  subnet-02267839c7a78a287  |
++-----------+----------------------------+
+
+
+########## ROUTE TABLES + ROUTES ##########
+[
+    {
+        "Name": null,
+        "RouteTableId": "rtb-0cc7e035597bda894",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "Target": "local"
+            }
+        ],
+        "Associations": []
+    },
+    {
+        "Name": "public-rt",
+        "RouteTableId": "rtb-0789b00aaf7455c7c",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "Target": "local"
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "Target": "igw-0d8218a7dc5a13fbe"
+            }
+        ],
+        "Associations": [
+            "subnet-02267839c7a78a287",
+            "subnet-02c09f7a40802b159"
+        ]
+    },
+    {
+        "Name": "app-rt",
+        "RouteTableId": "rtb-0e5da512b2e99abac",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "Target": "local"
+            },
+            {
+                "Dest": "0.0.0.0/0",
+                "Target": "nat-05d4531bfaea569ba"
+            }
+        ],
+        "Associations": [
+            "subnet-08bf3234f070914c5",
+            "subnet-0ae6fdaf3625f7066"
+        ]
+    },
+    {
+        "Name": "data-rt",
+        "RouteTableId": "rtb-0dbc0377e87cce3aa",
+        "Routes": [
+            {
+                "Dest": "10.0.0.0/16",
+                "Target": "local"
+            }
+        ],
+        "Associations": [
+            "subnet-0332b6e3b6749cca8",
+            "subnet-09555d6f52ddd710a"
+        ]
+    }
+]
+
+
+########## SECURITY GROUPS + RULES ##########
+[
+    {
+        "Name": "proj1-alb-sg",
+        "GroupId": "sg-09753d7d5333db81c",
+        "Inbound": [
+            {
+                "Port": 80,
+                "Proto": "tcp",
+                "SourceSG": null,
+                "SourceCIDR": "0.0.0.0/0"
+            },
+            {
+                "Port": 443,
+                "Proto": "tcp",
+                "SourceSG": null,
+                "SourceCIDR": "0.0.0.0/0"
+            }
+        ]
+    },
+    {
+        "Name": "proj1-bastion-sg",
+        "GroupId": "sg-052f149f8658f9922",
+        "Inbound": [
+            {
+                "Port": 22,
+                "Proto": "tcp",
+                "SourceSG": null,
+                "SourceCIDR": "0.0.0.0/0"
+            }
+        ]
+    },
+    {
+        "Name": "proj1-app-tier-sg",
+        "GroupId": "sg-0d7c27a50e69b5f9e",
+        "Inbound": [
+            {
+                "Port": 80,
+                "Proto": "tcp",
+                "SourceSG": "sg-09753d7d5333db81c",
+                "SourceCIDR": null
+            },
+            {
+                "Port": 22,
+                "Proto": "tcp",
+                "SourceSG": "sg-052f149f8658f9922",
+                "SourceCIDR": null
+            }
+        ]
+    },
+    {
+        "Name": "default",
+        "GroupId": "sg-09cfbd758698cf1a6",
+        "Inbound": [
+            {
+                "Port": null,
+                "Proto": "-1",
+                "SourceSG": "sg-09cfbd758698cf1a6",
+                "SourceCIDR": null
+            }
+        ]
+    },
+    {
+        "Name": "proj1-data-tier-sg",
+        "GroupId": "sg-0fa3145b2e6343ca8",
+        "Inbound": [
+            {
+                "Port": 5432,
+                "Proto": "tcp",
+                "SourceSG": "sg-0d7c27a50e69b5f9e",
+                "SourceCIDR": null
+            },
+            {
+                "Port": 22,
+                "Proto": "tcp",
+                "SourceSG": "sg-052f149f8658f9922",
+                "SourceCIDR": null
+            },
+            {
+                "Port": 3306,
+                "Proto": "tcp",
+                "SourceSG": "sg-0d7c27a50e69b5f9e",
+                "SourceCIDR": null
+            }
+        ]
+    }
+]
+
+
+########## EC2 INSTANCES (all, with SG + subnet) ##########
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                                       DescribeInstances                                                                                                      |
++------------------------------------------------------------+----------------------+----------+---------------------+--------------+----------------+---------------------+----------+---------------------------+------------+
+|                         IAMProfile                         |     InstanceId       | KeyName  |        Name         |  PrivateIP   |   PublicIP     |         SG          |  State   |          Subnet           |   Type     |
++------------------------------------------------------------+----------------------+----------+---------------------+--------------+----------------+---------------------+----------+---------------------------+------------+
+|  arn:aws:iam::743631836010:instance-profile/ec2-ssm-role-2 |  i-055b6e324ce59e638 |  None    |  proj1-bastion-host |  10.0.1.132  |  44.212.51.129 |  proj1-bastion-sg   |  running |  subnet-02267839c7a78a287 |  t3.micro  |
+|  arn:aws:iam::743631836010:instance-profile/ec2-ssm-role-2 |  i-0bfc1e8730e4729e8 |  None    |  proj1-app-server   |  10.0.11.102 |  None          |  proj1-app-tier-sg  |  running |  subnet-08bf3234f070914c5 |  t3.micro  |
+|  arn:aws:iam::743631836010:instance-profile/ec2-ssm-role-2 |  i-098bbdc041a7892bd |  None    |  proj1-app-server   |  10.0.12.164 |  None          |  proj1-app-tier-sg  |  running |  subnet-0ae6fdaf3625f7066 |  t3.micro  |
+|  arn:aws:iam::743631836010:instance-profile/ec2-ssm-role-2 |  i-019ed09dc2dd1abf7 |  None    |  proj1-app-server   |  10.0.12.211 |  None          |  proj1-app-tier-sg  |  running |  subnet-0ae6fdaf3625f7066 |  t3.micro  |
+|  arn:aws:iam::743631836010:instance-profile/ec2-ssm-role-2 |  i-0f0b8a4d750f122db |  None    |  proj1-db-1a        |  10.0.21.10  |  None          |  proj1-data-tier-sg |  running |  subnet-09555d6f52ddd710a |  t3.micro  |
++------------------------------------------------------------+----------------------+----------+---------------------+--------------+----------------+---------------------+----------+---------------------------+------------+
+
+
+########## AUTO SCALING GROUP ##########
+[
+    {
+        "Name": "proj1-app-asg",
+        "Min": 3,
+        "Max": 5,
+        "Desired": 3,
+        "HealthCheckType": "ELB",
+        "GracePeriod": 120,
+        "Subnets": "subnet-08bf3234f070914c5,subnet-0ae6fdaf3625f7066",
+        "Instances": [
+            {
+                "ID": "i-019ed09dc2dd1abf7",
+                "AZ": "us-east-1b",
+                "Health": "Healthy",
+                "LifecycleState": "InService"
+            },
+            {
+                "ID": "i-098bbdc041a7892bd",
+                "AZ": "us-east-1b",
+                "Health": "Healthy",
+                "LifecycleState": "InService"
+            },
+            {
+                "ID": "i-0bfc1e8730e4729e8",
+                "AZ": "us-east-1a",
+                "Health": "Healthy",
+                "LifecycleState": "InService"
+            }
+        ]
+    }
+]
+
+
+########## LAUNCH TEMPLATE VERSIONS ##########
+------------------------------------------------------------------
+|                 DescribeLaunchTemplateVersions                 |
++--------------+-------------------------------------------------+
+|  Default     |  True                                           |
+|  Description |  v3 - utf8 charset, env vars, standby caption   |
+|  InstanceType|  t3.micro                                       |
+|  Version     |  6                                              |
++--------------+-------------------------------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+|                 DescribeLaunchTemplateVersions                 |
++---------------------+------------------------------------------+
+|  Default            |  False                                   |
+|  Description        |  v2 - attach ec2-ssm-role-2              |
+|  InstanceType       |  t3.micro                                |
+|  Version            |  5                                       |
++---------------------+------------------------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+|                 DescribeLaunchTemplateVersions                 |
++----------------+-----------------------------------------------+
+|  Default       |  False                                        |
+|  Description   |  v2 - health button and clean formatting      |
+|  InstanceType  |  t3.micro                                     |
+|  Version       |  4                                            |
++----------------+-----------------------------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+|                 DescribeLaunchTemplateVersions                 |
++----------------------------+-----------------------------------+
+|  Default                   |  False                            |
+|  Description               |  v3-stress-ready                  |
+|  InstanceType              |  t3.micro                         |
+|  Version                   |  3                                |
++----------------------------+-----------------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+|                 DescribeLaunchTemplateVersions                 |
++-----------------------+----------------------------------------+
+|  Default              |  False                                 |
+|  Description          |  v2-dynamic-tcp-db-check               |
+|  InstanceType         |  t3.micro                              |
+|  Version              |  2                                     |
++-----------------------+----------------------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+|                 DescribeLaunchTemplateVersions                 |
++------------------------------------+---------------------------+
+|  Default                           |  False                    |
+|  Description                       |  v1                       |
+|  InstanceType                      |  t3.micro                 |
+|  Version                           |  1                        |
++------------------------------------+---------------------------+
+||                              SG                              ||
+|+--------------------------------------------------------------+|
+||  sg-0d7c27a50e69b5f9e                                        ||
+|+--------------------------------------------------------------+|
+
+
+########## LOAD BALANCER ##########
+---------------------------------------------------------------
+|                    DescribeLoadBalancers                    |
++--------+----------------------------------------------------+
+|  DNS   |  proj1-alb-336927573.us-east-1.elb.amazonaws.com   |
+|  Name  |  proj1-alb                                         |
+|  Scheme|  internet-facing                                   |
++--------+----------------------------------------------------+
+||                            SG                             ||
+|+-----------------------------------------------------------+|
+||  sg-09753d7d5333db81c                                     ||
+|+-----------------------------------------------------------+|
+||                          Subnets                          ||
+|+-----------------------------------------------------------+|
+||  subnet-02267839c7a78a287                                 ||
+||  subnet-02c09f7a40802b159                                 ||
+|+-----------------------------------------------------------+|
+
+
+########## TARGET GROUP + HEALTH ##########
+----------------------------------------
+|         DescribeTargetGroups         |
++---------------------+----------------+
+|  HealthCheckPath    |  /health       |
+|  HealthyThreshold   |  2             |
+|  Interval           |  15            |
+|  Name               |  proj1-app-tg  |
+|  Port               |  80            |
+|  Protocol           |  HTTP          |
+|  UnhealthyThreshold |  2             |
++---------------------+----------------+
+------------------------------------------------------
+|                DescribeTargetHealth                |
++----------------------+-------+---------+-----------+
+|      InstanceId      | Port  | Reason  |   State   |
++----------------------+-------+---------+-----------+
+|  i-019ed09dc2dd1abf7 |  80   |  None   |  healthy  |
+|  i-098bbdc041a7892bd |  80   |  None   |  healthy  |
+|  i-0bfc1e8730e4729e8 |  80   |  None   |  healthy  |
++----------------------+-------+---------+-----------+
+
+
+########## CLOUDWATCH ALARMS ##########
+-------------------------------------------------------------
+|                      DescribeAlarms                       |
++---------------------+-------------------------------------+
+|  ActionsEnabled     |  True                               |
+|  Metric             |  UnHealthyHostCount                 |
+|  Name               |  proj1-alb-unhealthy-hosts          |
+|  State              |  INSUFFICIENT_DATA                  |
+|  Threshold          |  1.0                                |
++---------------------+-------------------------------------+
+|                      DescribeAlarms                       |
++-------------------------+---------------------------------+
+|  ActionsEnabled         |  True                           |
+|  Metric                 |  CPUUtilization                 |
+|  Name                   |  proj1-asg-high-cpu             |
+|  State                  |  OK                             |
+|  Threshold              |  70.0                           |
++-------------------------+---------------------------------+
+||                      AlarmActions                       ||
+|+---------------------------------------------------------+|
+||  arn:aws:sns:us-east-1:743631836010:proj1-alarms-topic  ||
+|+---------------------------------------------------------+|
+
+
+########## ELASTIC IPs ##########
+----------------------------------------------------------------------------------------------
+|                                      DescribeAddresses                                     |
++-----------------------------+------------------------------+-------------+-----------------+
+|        AllocationId         |        AssociationId         | InstanceId  |    PublicIP     |
++-----------------------------+------------------------------+-------------+-----------------+
+|  eipalloc-0ae167c2ca6cbe922 |  eipassoc-0c17f7f5e74aca292  |  None       |  100.52.99.43   |
+|  eipalloc-0d7c8abe237ec1a5c |  eipassoc-08f3170769527f9cd  |  None       |  107.20.72.39   |
+|  eipalloc-0aff6724ad6c6d17a |  eipassoc-0315f134bc7862883  |  None       |  54.158.147.82  |
+|  eipalloc-05623dacd3572542e |  eipassoc-0c8fd8fea621a54cf  |  None       |  54.221.146.255 |
++-----------------------------+------------------------------+-------------+-----------------+
+
+
+########## IAM INSTANCE PROFILES (SSM-related) ##########
+------------------------------
+|    ListInstanceProfiles    |
++----------------------------+
+|            Name            |
++----------------------------+
+|  ec2-s3-cloudwatch-role    |
++----------------------------+
+||           Roles          ||
+|+--------------------------+|
+||  ec2-s3-cloudwatch-role  ||
+|+--------------------------+|
+|    ListInstanceProfiles    |
++----------------------------+
+|            Name            |
++----------------------------+
+|  EC2-SSM-Profile           |
++----------------------------+
+||           Roles          ||
+|+--------------------------+|
+||  EC2-SSM-Role            ||
+|+--------------------------+|
+|    ListInstanceProfiles    |
++----------------------------+
+|            Name            |
++----------------------------+
+|  ec2-ssm-role-2            |
++----------------------------+
+||           Roles          ||
+|+--------------------------+|
+||  ec2-ssm-role-2          ||
+|+--------------------------+|

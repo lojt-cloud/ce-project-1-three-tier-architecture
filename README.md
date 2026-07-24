@@ -33,7 +33,7 @@ These were chosen over other "Should Have" options (RDS Multi-AZ, HTTPS/ACM, Ela
                                    │ (Port 80, Target Group)
 ┌──────────────────────────────────▼───────────────────────────────────┐
 │ TIER 2: APPLICATION (Private Subnets — 10.0.11.0/24, 10.0.12.0/24)   │
-│         Auto Scaling Group (min 2 / desired 2 / max 6)               │
+│         Auto Scaling Group (min 3 / desired 3 / max 5)               │
 │         App Servers (Node.js) — scale on CPUUtilization              │
 └──────────────────────────────────┬───────────────────────────────────┘
                                    │ (Port 3306, internal only)
@@ -52,9 +52,9 @@ These were chosen over other "Should Have" options (RDS Multi-AZ, HTTPS/ACM, Ela
                   ▼ reaches App tier and Data tier
 ```
 
-Full breakdown of components, rationale, and trade-offs: [`ARCHITECTURE.md`](./architecture/ARCHITECTURE.md)
-Network design and routing strategy: [`NETWORK-DESIGN.md`](./architecture/NETWORK-DESIGN.md)
-Security group design and isolation model: [`SECURITY.md`](./architecture/SECURITY.md)
+Full breakdown of components, rationale, and trade-offs: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+Network design and routing strategy: [`NETWORK-DESIGN.md`](NETWORK-DESIGN.md)
+Security group design and isolation model: [`SECURITY.md`](SECURITY.md)
 
 ---
 
@@ -188,8 +188,10 @@ Short-term and long-term improvements, including the case for migrating the bast
 │   └── bastion-access.md
 ├── app/
 │   ├── server.js
-│   ├── userdata.sh
-│   └── db-sim.sh
+│   ├── app_userdata.sh
+│   ├── db-sim.sh
+│   ├── deploy.sh
+│   └── package.json
 ├── tests/
 │   ├── traffic-flow-test.md
 │   ├── security-test.md
