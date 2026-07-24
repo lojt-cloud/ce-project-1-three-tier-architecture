@@ -7,7 +7,7 @@ const STANDBY_DB_HOST = process.env.STANDBY_DB_HOST || '10.0.22.10';
 const DB_PORT = process.env.DB_PORT || 3306;
 
 // Helper function to check TCP socket connectivity
-function checkTcpSocket(host, port, timeout = 500) {
+function checkTcpSocket(host, port, timeout = 5000) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     socket.setTimeout(timeout);
