@@ -26,6 +26,6 @@ Verify that the Auto Scaling Group (ASG) and Application Load Balancer (ALB) han
 
 ## ## Test Verdict
 * **Result:** **PASSED**
-
+gt 
 * **Verification Summary:** 
 The infrastructure successfully demonstrated multi-AZ fault tolerance, automatic health-check pruning by the ALB, and self-healing compute provisioning via the Auto Scaling Group.
